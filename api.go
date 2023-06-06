@@ -43,7 +43,7 @@ func getPromotionByID(context *gin.Context) {
 	}
 
 	// Add the fetched promotion to cache
-	err = addPromotionToCache(id, promotion)
+	err = addPromotionToCache(redisClient, id, promotion)
 	if err != nil {
 		log.Println("Failed to add promotion to cache:", err)
 	}

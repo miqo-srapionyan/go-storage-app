@@ -47,7 +47,7 @@ func getPromotionFromCache(id string, redisClient *redis.Client) (*Promotion, er
 	}, nil
 }
 
-func addPromotionToCache(id string, promotion *Promotion) error {
+func addPromotionToCache(redisClient *redis.Client, id string, promotion *Promotion) error {
 	cacheKey := redisCacheKeyPrefix + id
 
 	// Add the promotion to the cache hash map
