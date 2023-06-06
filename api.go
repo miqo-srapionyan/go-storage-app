@@ -2,9 +2,10 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
+	"os"
 )
 
 type Promotion struct {
@@ -32,8 +33,9 @@ func getPromotionByID(context *gin.Context) {
 		return
 	}
 
+	db, err := sql.Open("mysql", os.Getenv("DB_USERNAME")+":"+os.Getenv("DB_PASSWORD")+"@tcp(database:3306)/"+os.Getenv("DB_NAME"))
 	// Cache miss, fetch from the database
-	promotion, err := getPromotionFromDatabase(id)
+	promotion, err := getPromotionFromDatabase(id, db)
 	if err == sql.ErrNoRows {
 		context.JSON(http.StatusNotFound, gin.H{"error": "Promotion not found"})
 		return
@@ -45,7 +47,7 @@ func getPromotionByID(context *gin.Context) {
 	// Add the fetched promotion to cache
 	err = addPromotionToCache(redisClient, id, promotion)
 	if err != nil {
-		log.Println("Failed to add promotion to cache:", err)
+		fmt.Println("Failed to add promotion to cache:", err)
 	}
 
 	context.JSON(http.StatusOK, promotion)

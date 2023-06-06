@@ -55,7 +55,7 @@ func insertData(db *sql.DB, recordsChan <-chan CSVRecord, wg *sync.WaitGroup) {
 	}
 }
 
-func getPromotionFromDatabase(id string) (*Promotion, error) {
+func getPromotionFromDatabase(id string, db *sql.DB) (*Promotion, error) {
 	var promotion Promotion
 	err := db.QueryRow(`
 		SELECT uuid, price, expiration_date

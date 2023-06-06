@@ -57,7 +57,7 @@ func addPromotionToCache(redisClient *redis.Client, id string, promotion *Promot
 		"ExpirationDate": promotion.ExpirationDate,
 	}
 
-	err := redisClient.HMSet(context.Background(), cacheKey, promotionData).Err()
+	err := redisClient.HSet(context.Background(), cacheKey, promotionData).Err()
 	if err != nil {
 		return err
 	}
