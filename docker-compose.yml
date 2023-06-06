@@ -1,0 +1,60 @@
+version: "3"
+services:
+  app:
+    image: storage-app
+    restart: unless-stopped
+    container_name: storage-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 1321:1321
+    depends_on:
+      database:
+          condition: service_healthy
+    environment:
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - DB_HOST=database
+      - DB_PORT=3306
+      - DB_NAME=storage_app
+    user: root
+  database:
+    image: mysql:8.0.21
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: database
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=app
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql:/docker-entrypoint-initdb.d/:ro
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    privileged: true
+  cache:
+    image: redis:7.0.8-alpine
+    container_name: cache
+    command:
+      - redis-server
+      - --save
+      - "20"
+      - "1"
+      - --loglevel
+      - warning
+    ports:
+      - 6379:6379
+    restart: always
+    volumes:
+      - redis-data:/data
+
+volumes:
+  mysql-data:
+  redis-data:
