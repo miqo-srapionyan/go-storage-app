@@ -23,6 +23,7 @@ $ clone repo
 $ cd go-storage-app.git
 $ docker-compose up -d --build
 ```
+**Note:** If you stop and run application multiple times, it will fill DB again and again.
 
 This will setup mysql database, and import default csv file(promotions.csv) into it.
 
